@@ -165,13 +165,13 @@ test_subjects &lt;- sample(unique(test_subjects$id), nrow(test_data), replace=T)
              gather(key=featureid, value=value, -subjectid, -activityid) %&gt;%
              mutate(featureid=extract_numeric(featureid)) 
 summary(test_data)</code></pre>
-<pre><code>##    subjectid        activityid      featureid       value        
-##  Min.   : 2.000   Min.   :2.000   Min.   :  1   Min.   :-1.0000  
-##  1st Qu.: 4.000   1st Qu.:2.000   1st Qu.:141   1st Qu.:-0.9992  
-##  Median : 4.000   Median :3.000   Median :281   Median :-0.9791  
-##  Mean   : 8.273   Mean   :3.182   Mean   :281   Mean   :-0.6429  
-##  3rd Qu.:12.000   3rd Qu.:4.000   3rd Qu.:421   3rd Qu.:-0.2855  
-##  Max.   :20.000   Max.   :5.000   Max.   :561   Max.   : 0.9984</code></pre>
+<pre><code>##    subjectid       activityid      featureid       value        
+##  Min.   : 2.00   Min.   :1.000   Min.   :  1   Min.   :-1.0000  
+##  1st Qu.: 4.00   1st Qu.:3.000   1st Qu.:141   1st Qu.:-0.9992  
+##  Median :13.00   Median :4.000   Median :281   Median :-0.9791  
+##  Mean   :12.55   Mean   :3.636   Mean   :281   Mean   :-0.6429  
+##  3rd Qu.:20.00   3rd Qu.:5.000   3rd Qu.:421   3rd Qu.:-0.2855  
+##  Max.   :24.00   Max.   :5.000   Max.   :561   Max.   : 0.9984</code></pre>
 <p>Let’s write all this in a function since we’ll be using it later:</p>
 <pre class="r"><code>read_signals &lt;- function(dataset_name, debug = F) {
     folder &lt;- paste('data', dataset_name, sep = '/')
@@ -234,22 +234,27 @@ mean_and_dev &lt;- merge(mean_and_dev, features, by.='featureid', by.y='id')</co
 <div id="task-4---use-descriptive-variable-names" class="section level2">
 <h2>Task 4 - use descriptive variable names</h2>
 <p>Appropriately label the data set with descriptive variable names.</p>
-<pre class="r"><code># already done
+<pre class="r"><code># the columns have already been named, let's name the measurements more explicitly
+# let's trim the feature name a bit
+mean_and_dev$longname &lt;- gsub('\\(\\)', '', mean_and_dev$longname)
+mean_and_dev$longname &lt;- gsub('-', '.', mean_and_dev$longname)
+mean_and_dev$activityname &lt;- gsub('(\\w)(\\w+)', '\\U\\1\\L\\2', mean_and_dev$activityname, perl=TRUE)
+mean_and_dev$activityname &lt;- gsub('_', ' ', mean_and_dev$activityname)
 head(mean_and_dev)</code></pre>
-<pre><code>##   featureid activityid subjectid     value       activityname domain
-## 1         1          1        24 0.2571778            WALKING      t
-## 2         1          5         4 0.2702982           STANDING      t
-## 3         1          6        12 0.2792199             LAYING      t
-## 4         1          3        24 0.2860267 WALKING_DOWNSTAIRS      t
-## 5         1          2         9 0.2748330   WALKING_UPSTAIRS      t
-## 6         1          1        28 0.2771988            WALKING      t
-##    signal type direction          longname
-## 1 BodyAcc mean         X tBodyAcc-mean()-X
-## 2 BodyAcc mean         X tBodyAcc-mean()-X
-## 3 BodyAcc mean         X tBodyAcc-mean()-X
-## 4 BodyAcc mean         X tBodyAcc-mean()-X
-## 5 BodyAcc mean         X tBodyAcc-mean()-X
-## 6 BodyAcc mean         X tBodyAcc-mean()-X</code></pre>
+<pre><code>##   featureid activityid subjectid     value     activityname domain  signal
+## 1         1          6         7 0.2794539           Laying      t BodyAcc
+## 2         1          5        24 0.2748330         Standing      t BodyAcc
+## 3         1          2        15 0.2766288 Walking upstairs      t BodyAcc
+## 4         1          2        20 0.2571778 Walking upstairs      t BodyAcc
+## 5         1          4        13 0.2725287          Sitting      t BodyAcc
+## 6         1          1        24 0.2757457          Walking      t BodyAcc
+##   type direction        longname
+## 1 mean         X tBodyAcc.mean.X
+## 2 mean         X tBodyAcc.mean.X
+## 3 mean         X tBodyAcc.mean.X
+## 4 mean         X tBodyAcc.mean.X
+## 5 mean         X tBodyAcc.mean.X
+## 6 mean         X tBodyAcc.mean.X</code></pre>
 </div>
 <div id="task-5---extract-average-for-each-activity-and-subject" class="section level2">
 <h2>Task 5 - extract average for each activity and subject</h2>
@@ -261,19 +266,19 @@ print(tidy)</code></pre>
 <pre><code>## Source: local data frame [693 x 4]
 ## Groups: subjectid, activityname [?]
 ## 
-##    subjectid activityname            meansurementtype
-##        (int)       (fctr)                      (fctr)
-## 1          1     STANDING           fBodyAcc-mean()-X
-## 2          1     STANDING           fBodyAcc-mean()-Y
-## 3          1     STANDING           fBodyAcc-mean()-Z
-## 4          1     STANDING       fBodyAccJerk-mean()-X
-## 5          1     STANDING       fBodyAccJerk-mean()-Y
-## 6          1     STANDING       fBodyAccJerk-mean()-Z
-## 7          1     STANDING          fBodyAccMag-mean()
-## 8          1     STANDING  fBodyBodyAccJerkMag-mean()
-## 9          1     STANDING fBodyBodyGyroJerkMag-mean()
-## 10         1     STANDING     fBodyBodyGyroMag-mean()
-## ..       ...          ...                         ...
+##    subjectid activityname          meansurementtype
+##        (int)        (chr)                     (chr)
+## 1          2      Sitting           fBodyAcc.mean.X
+## 2          2      Sitting           fBodyAcc.mean.Y
+## 3          2      Sitting           fBodyAcc.mean.Z
+## 4          2      Sitting       fBodyAccJerk.mean.X
+## 5          2      Sitting       fBodyAccJerk.mean.Y
+## 6          2      Sitting       fBodyAccJerk.mean.Z
+## 7          2      Sitting          fBodyAccMag.mean
+## 8          2      Sitting  fBodyBodyAccJerkMag.mean
+## 9          2      Sitting fBodyBodyGyroJerkMag.mean
+## 10         2      Sitting     fBodyBodyGyroMag.mean
+## ..       ...          ...                       ...
 ## Variables not shown: averagemeasurementvalue (dbl)</code></pre>
 </div>
 </div>
