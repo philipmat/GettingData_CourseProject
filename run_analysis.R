@@ -127,7 +127,4 @@ write.table(tidy, file='tidy_data.txt', row.names = F, append = F)
 ## As the purpose of this script is to produce a file
 ## we need to clean up after ourselves: remove the large dataset from memory
 ## Comment out this line should you want the variables in memory for further inspection.
-# rm(activities, features, test_data, train_data, ids_of_mean_and_average, mean_and_dev, tidy)
-
-
-
+rm(activities, features, test_data, train_data, ids_of_mean_and_average, mean_and_dev, tidy)
