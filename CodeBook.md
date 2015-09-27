@@ -48,7 +48,7 @@ The columns of the dataset hold a measurement for each one of the following vari
 
 ## Data Description
 
-### activity.name
+#### activity.name
 This variable consists of one of:
 - **Laying** - the subject was laying
 - **Sitting** - the subject was sitting
@@ -57,7 +57,7 @@ This variable consists of one of:
 - **Walking upstairs** - the subject was climbing up the stairs
 - **Walking downstairs** - the subject was  climbing down the stairs
 
-### measurement.type
+#### measurement.type
 
 This variable contains one of 66 possible values:
 - fBodyAcc.mean.X
@@ -128,7 +128,7 @@ This variable contains one of 66 possible values:
 - tGravityAccMag.std
 
 
-### measurement.average
+#### measurement.average
 
 All values are in the *(-1, 1)* range and represent the *mean* values of the 
 original measurements for each one of the subjects/activities/measurements types.
@@ -142,7 +142,8 @@ original measurements for each one of the subjects/activities/measurements types
 
 The original data has been merged into a singly dataset. 
 The features have been read from the *features.txt* file and have been processed to remove 
-the `()` indicating a function has been applied and the dashes have been replaced by period 
+the `()` indicating a function has been applied; also the dashes in their names
+, eg. *tGravityAcc-std()-X*, have been replaced by periods
 (to make it easier to possibly turn them into R factors for a transformed dataset).
 
 The name of the activities have been read from *activity_labels.txt* and transform from
