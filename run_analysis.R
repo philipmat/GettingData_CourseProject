@@ -4,7 +4,7 @@ library(dplyr)
 library(tidyr)
 
 ## First lets load the activities as there's not much to clean up there.
-activities <- read.table('data/activity_labels.txt', sep = ' ', col.names = c('id', 'activityname'))
+activities <- read.table('data/activity_labels.txt', sep = ' ', col.names = c('id', 'activity.name'))
 # print(activities)
 
 ## Features, aka what the measurements represent, have the same format, but the data will require
@@ -94,8 +94,8 @@ train_data <- read_signals('train')
 data <- bind_rows(test_data, train_data)
 
 ## Task 2 - Extract only the measurements on the mean and standard deviation for each measurement
-## First we get the ids where the feature name contains either *mean* or *avg*.
-ids_of_mean_and_average <- grep('(mean|avg)', features$feature)
+## First we get the ids where the feature name contains either *mean()* or *avg()*.
+ids_of_mean_and_average <- grep('-mean\\(|-std\\(', features$feature)
 mean_and_dev <- filter(data, featureid %in% ids_of_mean_and_average)
 
 ## Task 3 - Use descriptive activity names to name the activities in the data set.
@@ -105,22 +105,29 @@ mean_and_dev <- merge(mean_and_dev, activities, by.x='activityid', by.y='id')
 mean_and_dev <- merge(mean_and_dev, features, by.x='featureid', by.y='id')
 
 ### Task 4 - Appropriately label the data set with descriptive variable names.
-## Already done in the previous steps
+## Columns have already been done in the previous steps
+## Trim the feature column a bit
+mean_and_dev$feature <- gsub('\\(\\)', '', mean_and_dev$feature)
+mean_and_dev$feature <- gsub('-', '.', mean_and_dev$feature)
+mean_and_dev$activity.name <- gsub('(\\w)(\\w+)', '\\U\\1\\L\\2', mean_and_dev$activity.name, perl=TRUE)
+mean_and_dev$activity.name <- gsub('_', ' ', mean_and_dev$activity.name)
 # head(mean_and_dev)
 
 ## Task 5 - From the data set in step 4, create a second, independent tidy data set with the average of each variable for each activity and each subject.
 tidy <- mean_and_dev %>%
-     group_by(subjectid, activityname, feature) %>%
-     summarize(average=mean(value))
+     group_by(subjectid, activity.name, measurement.type=feature) %>%
+     summarize(measurement.average=mean(value))
 
 
 ## Write out the tidy data to submit for course analysis.
-write.table(tidy, file='tidy_data.txt', row.names = F)
+write.table(tidy, file='tidy_data.txt', row.names = F, append = F)
 
 
 
-## Let's clean up after ourselves: remove the large dataset from memory
-rm(activities, features, test_data, train_data, ids_of_mean_and_average, mean_and_dev, tidy)
+## As the purpose of this script is to produce a file
+## we need to clean up after ourselves: remove the large dataset from memory
+## Comment out this line should you want the variables in memory for further inspection.
+# rm(activities, features, test_data, train_data, ids_of_mean_and_average, mean_and_dev, tidy)
 
 
 

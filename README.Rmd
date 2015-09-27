@@ -186,9 +186,10 @@ Extract only the measurements on the mean and standard deviation for each measur
 
 ```{r}
 # print(features$longname)
-ids_of_mean_and_average <- grep('(mean|avg)', features$longname)
+ids_of_mean_and_average <- grep('(mean\\(|avg\\())', features$longname)
 mean_and_dev <- filter(data, featureid %in% ids_of_mean_and_average)
 ```
+We have **`r format(nrow(ids_of_mean_and_average))` measurements**.
 
 ## Task 3 - descriptive activity names
 
@@ -204,7 +205,12 @@ mean_and_dev <- merge(mean_and_dev, features, by.='featureid', by.y='id')
 Appropriately label the data set with descriptive variable names.
 
 ```{r}
-# already done
+# the columns have already been named, let's name the measurements more explicitly
+# let's trim the feature name a bit
+mean_and_dev$longname <- gsub('\\(\\)', '', mean_and_dev$longname)
+mean_and_dev$longname <- gsub('-', '.', mean_and_dev$longname)
+mean_and_dev$activityname <- gsub('(\\w)(\\w+)', '\\U\\1\\L\\2', mean_and_dev$activityname, perl=TRUE)
+mean_and_dev$activityname <- gsub('_', ' ', mean_and_dev$activityname)
 head(mean_and_dev)
 ```
 
@@ -215,8 +221,8 @@ From the data set in step 4, create a second, independent tidy data set with the
 
 ```{r}
 tidy <- mean_and_dev %>%
-     group_by(subjectid, activityname, longname) %>%
-     summarize(averagevalue=mean(value))
+     group_by(subjectid, activityname, meansurementtype=longname) %>%
+     summarize(averagemeasurementvalue=mean(value))
 print(tidy)
 ```
     

@@ -165,13 +165,13 @@ test_subjects &lt;- sample(unique(test_subjects$id), nrow(test_data), replace=T)
              gather(key=featureid, value=value, -subjectid, -activityid) %&gt;%
              mutate(featureid=extract_numeric(featureid)) 
 summary(test_data)</code></pre>
-<pre><code>##    subjectid       activityid      featureid       value        
-##  Min.   : 2.00   Min.   :1.000   Min.   :  1   Min.   :-1.0000  
-##  1st Qu.: 4.00   1st Qu.:3.000   1st Qu.:141   1st Qu.:-0.9992  
-##  Median :10.00   Median :4.000   Median :281   Median :-0.9791  
-##  Mean   :10.73   Mean   :3.818   Mean   :281   Mean   :-0.6429  
-##  3rd Qu.:18.00   3rd Qu.:5.000   3rd Qu.:421   3rd Qu.:-0.2855  
-##  Max.   :20.00   Max.   :6.000   Max.   :561   Max.   : 0.9984</code></pre>
+<pre><code>##    subjectid        activityid      featureid       value        
+##  Min.   : 2.000   Min.   :2.000   Min.   :  1   Min.   :-1.0000  
+##  1st Qu.: 4.000   1st Qu.:2.000   1st Qu.:141   1st Qu.:-0.9992  
+##  Median : 4.000   Median :3.000   Median :281   Median :-0.9791  
+##  Mean   : 8.273   Mean   :3.182   Mean   :281   Mean   :-0.6429  
+##  3rd Qu.:12.000   3rd Qu.:4.000   3rd Qu.:421   3rd Qu.:-0.2855  
+##  Max.   :20.000   Max.   :5.000   Max.   :561   Max.   : 0.9984</code></pre>
 <p>Let’s write all this in a function since we’ll be using it later:</p>
 <pre class="r"><code>read_signals &lt;- function(dataset_name, debug = F) {
     folder &lt;- paste('data', dataset_name, sep = '/')
@@ -221,8 +221,9 @@ train_data &lt;- read_signals('train', debug = T)</code></pre>
 <h2>Task 2 - extract mean and deviation</h2>
 <p>Extract only the measurements on the mean and standard deviation for each measurement</p>
 <pre class="r"><code># print(features$longname)
-ids_of_mean_and_average &lt;- grep('(mean|avg)', features$longname)
+ids_of_mean_and_average &lt;- grep('(mean\\(|avg\\())', features$longname)
 mean_and_dev &lt;- filter(data, featureid %in% ids_of_mean_and_average)</code></pre>
+<p>We have <strong>NULL measurements</strong>.</p>
 </div>
 <div id="task-3---descriptive-activity-names" class="section level2">
 <h2>Task 3 - descriptive activity names</h2>
@@ -236,12 +237,12 @@ mean_and_dev &lt;- merge(mean_and_dev, features, by.='featureid', by.y='id')</co
 <pre class="r"><code># already done
 head(mean_and_dev)</code></pre>
 <pre><code>##   featureid activityid subjectid     value       activityname domain
-## 1         1          1        10 0.2746005            WALKING      t
-## 2         1          3        27 0.2791739 WALKING_DOWNSTAIRS      t
-## 3         1          5         4 0.2748330           STANDING      t
-## 4         1          6        12 0.2571778             LAYING      t
-## 5         1          6        18 0.2757457             LAYING      t
-## 6         1          3        29 0.2766288 WALKING_DOWNSTAIRS      t
+## 1         1          1        24 0.2571778            WALKING      t
+## 2         1          5         4 0.2702982           STANDING      t
+## 3         1          6        12 0.2792199             LAYING      t
+## 4         1          3        24 0.2860267 WALKING_DOWNSTAIRS      t
+## 5         1          2         9 0.2748330   WALKING_UPSTAIRS      t
+## 6         1          1        28 0.2771988            WALKING      t
 ##    signal type direction          longname
 ## 1 BodyAcc mean         X tBodyAcc-mean()-X
 ## 2 BodyAcc mean         X tBodyAcc-mean()-X
@@ -254,25 +255,26 @@ head(mean_and_dev)</code></pre>
 <h2>Task 5 - extract average for each activity and subject</h2>
 <p>From the data set in step 4, create a second, independent tidy data set with the average of each variable for each activity and each subject.</p>
 <pre class="r"><code>tidy &lt;- mean_and_dev %&gt;%
-     group_by(subjectid, activityname, longname) %&gt;%
-     summarize(average=mean(value))
+     group_by(subjectid, activityname, meansurementtype=longname) %&gt;%
+     summarize(averagemeasurementvalue=mean(value))
 print(tidy)</code></pre>
-<pre><code>## Source: local data frame [874 x 4]
+<pre><code>## Source: local data frame [693 x 4]
 ## Groups: subjectid, activityname [?]
 ## 
-##    subjectid activityname                  longname    average
-##        (int)       (fctr)                    (fctr)      (dbl)
-## 1          3      SITTING         fBodyAcc-mean()-X -0.9958491
-## 2          3      SITTING         fBodyAcc-mean()-Y -0.9676116
-## 3          3      SITTING         fBodyAcc-mean()-Z -0.9841233
-## 4          3      SITTING     fBodyAcc-meanFreq()-X  0.4322633
-## 5          3      SITTING     fBodyAcc-meanFreq()-Y  0.1104108
-## 6          3      SITTING     fBodyAcc-meanFreq()-Z  0.3795863
-## 7          3      SITTING     fBodyAccJerk-mean()-X -0.9947551
-## 8          3      SITTING     fBodyAccJerk-mean()-Y -0.9832403
-## 9          3      SITTING     fBodyAccJerk-mean()-Z -0.9873372
-## 10         3      SITTING fBodyAccJerk-meanFreq()-X  0.3564041
-## ..       ...          ...                       ...        ...</code></pre>
+##    subjectid activityname            meansurementtype
+##        (int)       (fctr)                      (fctr)
+## 1          1     STANDING           fBodyAcc-mean()-X
+## 2          1     STANDING           fBodyAcc-mean()-Y
+## 3          1     STANDING           fBodyAcc-mean()-Z
+## 4          1     STANDING       fBodyAccJerk-mean()-X
+## 5          1     STANDING       fBodyAccJerk-mean()-Y
+## 6          1     STANDING       fBodyAccJerk-mean()-Z
+## 7          1     STANDING          fBodyAccMag-mean()
+## 8          1     STANDING  fBodyBodyAccJerkMag-mean()
+## 9          1     STANDING fBodyBodyGyroJerkMag-mean()
+## 10         1     STANDING     fBodyBodyGyroMag-mean()
+## ..       ...          ...                         ...
+## Variables not shown: averagemeasurementvalue (dbl)</code></pre>
 </div>
 </div>
 
