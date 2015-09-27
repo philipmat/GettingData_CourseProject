@@ -30,5 +30,5 @@ I love [RMarkdown]() and instead of commenting out my code - which I do; religio
 include such R notebooks with my scripts as they often provide a more pleasant experience to
 the tersness of code and comments. 
 
-The *README.html* file, which you [can see displayed fully here](), is a window into how I've approached 
+The *README.html* file, which you [can see displayed fully here](https://htmlpreview.github.io/?https://raw.githubusercontent.com/philipmat/GettingData_CourseProject/master/README.html), is a window into how I've approached 
 this assignment and the natural steps taken to produce the clean data.
