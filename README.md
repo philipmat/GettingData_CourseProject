@@ -20,7 +20,7 @@ https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Datas
 
 And then unzip it in a folder called **data** in the same folder as the *run_analysis.R* script.
 
-Then source the script and after a few seconds (or more, depending on your hardware) the *tidy_data.txt*
+Then source the script: `source('run_analysis.R')` and after a few seconds (or more, depending on your hardware) the *tidy_data.txt*
 should be produced.
 
 ## Worth mentioning
