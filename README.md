@@ -26,7 +26,7 @@ should be produced.
 ## Worth mentioning
 
 Dear reader, I mean *evaluator* - the *README.Rmd* and *README.html* files might also be of interest. 
-I love [RMarkdown]() and instead of commenting out my code - which I do; religiously - I prefer to 
+I love [RMarkdown](http://rmarkdown.rstudio.com/) and instead of commenting out my code - which I do; religiously - I prefer to 
 include such R notebooks with my scripts as they often provide a more pleasant experience to
 the tersness of code and comments. 
 
